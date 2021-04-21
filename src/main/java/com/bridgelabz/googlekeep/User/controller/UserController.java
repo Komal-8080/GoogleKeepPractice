@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import javax.validation.Valid;
+import java.io.IOException;
 import java.util.UUID;
 
 @RestController
@@ -70,9 +71,9 @@ public class UserController {
     }
 
     @PostMapping("/uploadProfileImage")
-    public ResponseEntity<ResponseDTO> uploadProfileImage(@RequestHeader String token , @RequestParam MultipartFile image) {
+    public ResponseEntity<ResponseDTO> uploadProfileImage(@RequestHeader String token , @RequestParam MultipartFile image) throws IOException {
         String response = iUserService.uploadProfileImage(token, image);
-        ResponseDTO responseDTO = new ResponseDTO("image uploaded Successfully", response);
+        ResponseDTO responseDTO = new ResponseDTO("Profile Image Uploading..", response);
         return new ResponseEntity<ResponseDTO>(responseDTO,HttpStatus.OK);
     }
 
@@ -83,4 +84,10 @@ public class UserController {
         return new ResponseEntity<ResponseDTO>(responseDTO,HttpStatus.OK);
     }
 
+    @DeleteMapping("/removeProfileImage")
+    public ResponseEntity<ResponseDTO> removeProfileImage(@RequestHeader String token) {
+        iUserService.removeProfileImage(token);
+        ResponseDTO responseDTO = new ResponseDTO("Removing profile Image","image removed Successfully");
+        return new ResponseEntity<ResponseDTO>(responseDTO,HttpStatus.OK);
+    }
 }

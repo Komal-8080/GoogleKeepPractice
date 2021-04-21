@@ -65,9 +65,16 @@ public class NotesController {
         return new ResponseEntity<ResponseDTO>(responseDTO,HttpStatus.OK);
     }
 
-    @PostMapping("/removeImageFromNotes/{noteId}")
-    public ResponseEntity<ResponseDTO> removeImageFromNotes(@RequestHeader String token,@PathVariable UUID noteId) {
-        iNotesService.removeImageFromNotes(token,noteId);
+    @GetMapping("/getImagesFromNotes")
+    public ResponseEntity<ResponseDTO> getImagesFromNotes(@RequestHeader String token,@RequestParam UUID noteId) {
+        List<String> response = iNotesService.getImagesFromNotes(token,noteId);
+        ResponseDTO responseDTO = new ResponseDTO("Images for noteId "+noteId,response);
+        return new ResponseEntity<ResponseDTO>(responseDTO,HttpStatus.OK);
+    }
+
+    @DeleteMapping("/removeImageFromNotes/{noteId}")
+    public ResponseEntity<ResponseDTO> removeImageFromNotes(@RequestHeader String token,@PathVariable UUID noteId,@RequestParam String image) {
+        iNotesService.removeImageFromNotes(token,noteId,image);
         ResponseDTO responseDTO = new ResponseDTO("image removed Successfully",noteId);
         return new ResponseEntity<ResponseDTO>(responseDTO,HttpStatus.OK);
     }
@@ -134,4 +141,6 @@ public class NotesController {
         ResponseDTO responseDTO = new ResponseDTO("Get Call Successful", userNotesList);
         return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.OK);
     }
+
+//    @PostMapping("/setReminders")
 }

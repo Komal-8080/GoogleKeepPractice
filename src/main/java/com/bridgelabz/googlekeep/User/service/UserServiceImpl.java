@@ -1,5 +1,6 @@
 package com.bridgelabz.googlekeep.User.service;
 
+import com.bridgelabz.googlekeep.Notes.model.UserNotes;
 import com.bridgelabz.googlekeep.Response.ResponseToken;
 import com.bridgelabz.googlekeep.User.dto.EmailDTO;
 import com.bridgelabz.googlekeep.User.dto.PasswordDTO;
@@ -7,12 +8,18 @@ import com.bridgelabz.googlekeep.User.dto.RegistrationDTO;
 import com.bridgelabz.googlekeep.User.dto.UserDTO;
 import com.bridgelabz.googlekeep.User.model.Registration;
 import com.bridgelabz.googlekeep.User.repository.RegistrationRepository;
+import com.bridgelabz.googlekeep.exceptions.NoteException;
 import com.bridgelabz.googlekeep.exceptions.UserException;
+import com.bridgelabz.googlekeep.utility.FileUploadUtil;
 import com.bridgelabz.googlekeep.utility.TokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.awt.*;
+import java.io.IOException;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -131,15 +138,17 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public String uploadProfileImage(String token, MultipartFile image) {
+    public String uploadProfileImage(String token, MultipartFile image) throws IOException {
         UUID id = UUID.fromString(tokenUtil.decodeToken(token));
         Optional<Registration> isUserExists = registrationRepository.findById(id);
-        if (!isUserExists.isPresent()){
-            throw new UserException("User Not Found");
-        }
-        isUserExists.get().setProfileImage(String.valueOf(image));
-        registrationRepository.save(isUserExists.get());
-        return "Image Uploaded Successfully";
+        if (isUserExists.isPresent()) {
+            String fileName = StringUtils.cleanPath(image.getOriginalFilename());
+            isUserExists.get().setProfileImage(fileName);
+            Registration saveImage = registrationRepository.save(isUserExists.get());
+            String uploadDir = "profileImages/" + saveImage.getProfileImage();
+            FileUploadUtil.saveFile(uploadDir, fileName, image);
+            return "Image Uploaded Successfully";
+        } throw new UserException("User Not Found");
     }
 
     @Override
@@ -153,5 +162,14 @@ public class UserServiceImpl implements IUserService {
         return profileImage;
     }
 
+    @Override
+    public void removeProfileImage(String token) {
+        UUID id = UUID.fromString(tokenUtil.decodeToken(token));
+        Optional<Registration> isUserExists = registrationRepository.findById(id);
+        if (isUserExists.isPresent()) {
+            isUserExists.get().setProfileImage(null);
+            registrationRepository.save(isUserExists.get());
+        }
+    }
 
 }

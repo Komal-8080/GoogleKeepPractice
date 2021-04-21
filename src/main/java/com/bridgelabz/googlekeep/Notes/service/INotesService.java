@@ -24,7 +24,7 @@ public interface INotesService {
 
     void addImageToNotes(String token, UUID noteId, MultipartFile image) throws IOException;
 
-    void removeImageFromNotes(String token, UUID noteId);
+    void removeImageFromNotes(String token, UUID noteId,String image);
 
     String pinNote(String token, UUID noteId);
 
@@ -43,4 +43,6 @@ public interface INotesService {
     String deleteCollaboratorFromNotes(String token,UUID noteId,UUID collaboratorId);
 
     List<Collaborator> getCollaboratorsForNotes(String token, UUID noteId);
+
+    List<String> getImagesFromNotes(String token, UUID noteId);
 }

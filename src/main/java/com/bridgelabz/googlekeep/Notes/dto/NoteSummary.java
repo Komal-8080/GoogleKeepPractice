@@ -20,13 +20,14 @@ public class NoteSummary {
     private LocalDateTime notesCreatedOn;
     private LocalDateTime noteEditedOn;
     private String colour;
-    private String image;
     private boolean pin;
     private boolean trash;
     private boolean archive;
     private List<Collaborator> collaborator;
+    private List<String> image;
     private UUID labelId;
     private String labelName;
+    private List<LocalDateTime> reminders;
 
     public NoteSummary(UserNotes userNotes) {
         this.noteId = userNotes.getNoteId().toString();
@@ -36,13 +37,14 @@ public class NoteSummary {
         this.notesCreatedOn = userNotes.getNotesCreatedOn();
         this.noteEditedOn = userNotes.getNoteEditedOn();
         this.colour = userNotes.getColour();
-        this.image = userNotes.getImage();
         this.pin = userNotes.isPin();
         this.trash =userNotes.isTrash();
         this.archive = userNotes.isArchive();
         this.collaborator = userNotes.getCollaboratorList();
+        this.image = userNotes.getImage();
         this.labelId = userNotes.getLabelId();
         this.labelName = userNotes.getLabelName();
+        this.reminders = userNotes.getReminders();
     }
 
 }

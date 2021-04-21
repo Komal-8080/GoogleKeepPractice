@@ -30,15 +30,20 @@ public @Data class UserNotes {
     private LocalDateTime notesCreatedOn;
     private LocalDateTime noteEditedOn;
     private String colour = "White";
-    private String image;
     private boolean pin;
     private boolean trash;
     private boolean archive;
     private UUID labelId;
     private String labelName;
 
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ElementCollection
+    private List<String> image;
+
+    @OneToMany(cascade = CascadeType.ALL)
     private List<Collaborator> collaboratorList;
+
+    @ElementCollection
+    private List<LocalDateTime> reminders;
 
     public void updateNotes(EditNotesDTO editNotesDTO) {
         this.noteId = editNotesDTO.getNoteId();

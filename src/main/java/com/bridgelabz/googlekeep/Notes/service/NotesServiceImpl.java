@@ -129,25 +129,34 @@ public class NotesServiceImpl implements INotesService {
         Optional<UserNotes> userNotes = notesRepository.findByNoteId(noteId);
         if (isUserExists.isPresent() && userNotes.isPresent()) {
             String fileName = StringUtils.cleanPath(image.getOriginalFilename());
-
-            userNotes.get().setImage(fileName);
+            userNotes.get().getImage().add(fileName);
             UserNotes saveImage = notesRepository.save(userNotes.get());
-            System.out.println("FileName: "+fileName);
             String uploadDir = "user-photos/" + saveImage.getNoteId();
-            System.out.println("FileName: "+uploadDir);
             FileUploadUtil.saveFile(uploadDir, fileName, image);
         }
     }
 
     @Override
-    public void removeImageFromNotes(String token, UUID noteId) {
+    public List<String> getImagesFromNotes(String token, UUID noteId) {
         UUID id = UUID.fromString(tokenUtil.decodeToken(token));
         Optional<Registration> isUserExists = registrationRepository.findById(id);
         Optional<UserNotes> userNotes = notesRepository.findByNoteId(noteId);
         if (isUserExists.isPresent() && userNotes.isPresent()) {
-            userNotes.get().setImage(null);
-            notesRepository.save(userNotes.get());
+            return userNotes.get().getImage();
         }
+        throw new NoteException("Notes Not Found");
+    }
+
+
+    @Override
+    public void removeImageFromNotes(String token, UUID noteId,String image) {
+        UUID id = UUID.fromString(tokenUtil.decodeToken(token));
+        Optional<Registration> isUserExists = registrationRepository.findById(id);
+        Optional<UserNotes> userNotes = notesRepository.findByNoteId(noteId);
+        if (isUserExists.isPresent() && userNotes.isPresent()) {
+                userNotes.get().getImage().remove(image);
+                notesRepository.save(userNotes.get());
+        }throw new NoteException("Image not Found");
     }
 
     @Override
