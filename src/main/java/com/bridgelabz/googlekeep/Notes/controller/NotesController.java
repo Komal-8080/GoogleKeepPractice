@@ -142,5 +142,24 @@ public class NotesController {
         return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.OK);
     }
 
-//    @PostMapping("/setReminders")
+    @PostMapping("/setReminderToNewNote")
+    public ResponseEntity<ResponseDTO> setReminderToNewNote(@RequestHeader String token,@RequestParam String setReminder,@RequestBody NotesDTO notesDTO) {
+        UserNotes editedNotes = iNotesService.setReminderToNewNote(token,setReminder,notesDTO);
+        ResponseDTO responseDTO = new ResponseDTO("Reminder Set Successfully to New Notes", editedNotes);
+        return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.OK);
+    }
+
+    @PutMapping("/setReminderToExistingNote/{noteId}")
+    public ResponseEntity<ResponseDTO> setReminderToExistingNote(@RequestHeader String token,@PathVariable UUID noteId,@RequestParam String setReminder) {
+        UserNotes editedNotes = iNotesService.setReminderToExistingNote(token,noteId,setReminder);
+        ResponseDTO responseDTO = new ResponseDTO("Reminder Set Successfully to "+noteId, editedNotes);
+        return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/deleteReminderFromNotes/{noteId}")
+    public ResponseEntity<ResponseDTO> deleteReminderFromNotes(@RequestHeader String token,@PathVariable UUID noteId) {
+        iNotesService.deleteReminderFromNotes(token,noteId);
+        ResponseDTO responseDTO = new ResponseDTO("Reminder removed Successfully",noteId);
+        return new ResponseEntity<ResponseDTO>(responseDTO,HttpStatus.OK);
+    }
 }

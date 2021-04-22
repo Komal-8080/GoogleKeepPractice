@@ -15,7 +15,7 @@ public class ColourDTO {
     @NotNull(message = "NoteId Cannot be Empty")
     private UUID noteId;
 
-    @Pattern(regexp = "White|Red|Yellow|Blue|Green|Purple|Pink", message = "you can add only this colors red,yellow,blue,green,purple,pink")
+    @Pattern(regexp = "White|Red|Yellow|Blue|Green|Purple|Pink", message = "you can add only this colors white,red,yellow,blue,green,purple,pink")
     private String colour = "White";
 
 }

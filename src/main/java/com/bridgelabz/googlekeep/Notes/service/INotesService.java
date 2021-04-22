@@ -45,4 +45,10 @@ public interface INotesService {
     List<Collaborator> getCollaboratorsForNotes(String token, UUID noteId);
 
     List<String> getImagesFromNotes(String token, UUID noteId);
+
+    UserNotes setReminderToNewNote(String token, String setReminder, NotesDTO notesDTO);
+
+    UserNotes setReminderToExistingNote(String token, UUID noteId, String setReminder);
+
+    void deleteReminderFromNotes(String token, UUID noteId);
 }

@@ -35,15 +35,13 @@ public @Data class UserNotes {
     private boolean archive;
     private UUID labelId;
     private String labelName;
+    private String reminder;
 
     @ElementCollection
     private List<String> image;
 
     @OneToMany(cascade = CascadeType.ALL)
     private List<Collaborator> collaboratorList;
-
-    @ElementCollection
-    private List<LocalDateTime> reminders;
 
     public void updateNotes(EditNotesDTO editNotesDTO) {
         this.noteId = editNotesDTO.getNoteId();

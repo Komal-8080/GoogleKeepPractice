@@ -27,24 +27,23 @@ public class NoteSummary {
     private List<String> image;
     private UUID labelId;
     private String labelName;
-    private List<LocalDateTime> reminders;
+    private String reminder;
 
     public NoteSummary(UserNotes userNotes) {
-        this.noteId = userNotes.getNoteId().toString();
-        this.id = userNotes.getId().toString();
-        this.title = userNotes.getTitle();
-        this.description = userNotes.getDescription();
-        this.notesCreatedOn = userNotes.getNotesCreatedOn();
-        this.noteEditedOn = userNotes.getNoteEditedOn();
-        this.colour = userNotes.getColour();
-        this.pin = userNotes.isPin();
-        this.trash =userNotes.isTrash();
-        this.archive = userNotes.isArchive();
-        this.collaborator = userNotes.getCollaboratorList();
-        this.image = userNotes.getImage();
-        this.labelId = userNotes.getLabelId();
-        this.labelName = userNotes.getLabelName();
-        this.reminders = userNotes.getReminders();
+            this.noteId = userNotes.getNoteId().toString();
+            this.id = userNotes.getId().toString();
+            this.title = userNotes.getTitle();
+            this.description = userNotes.getDescription();
+            this.notesCreatedOn = userNotes.getNotesCreatedOn();
+            this.noteEditedOn = userNotes.getNoteEditedOn();
+            this.colour = userNotes.getColour();
+            this.pin = userNotes.isPin();
+            this.trash =userNotes.isTrash();
+            this.archive = userNotes.isArchive();
+            this.collaborator = userNotes.getCollaboratorList();
+            this.image = userNotes.getImage();
+            this.labelId = userNotes.getLabelId();
+            this.labelName = userNotes.getLabelName();
+            this.reminder = userNotes.getReminder();
     }
-
 }

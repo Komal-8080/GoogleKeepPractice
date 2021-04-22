@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -130,6 +131,7 @@ public class NotesServiceImpl implements INotesService {
         if (isUserExists.isPresent() && userNotes.isPresent()) {
             String fileName = StringUtils.cleanPath(image.getOriginalFilename());
             userNotes.get().getImage().add(fileName);
+            userNotes.get().setNoteEditedOn(LocalDateTime.now());
             UserNotes saveImage = notesRepository.save(userNotes.get());
             String uploadDir = "user-photos/" + saveImage.getNoteId();
             FileUploadUtil.saveFile(uploadDir, fileName, image);
@@ -147,7 +149,6 @@ public class NotesServiceImpl implements INotesService {
         throw new NoteException("Notes Not Found");
     }
 
-
     @Override
     public void removeImageFromNotes(String token, UUID noteId,String image) {
         UUID id = UUID.fromString(tokenUtil.decodeToken(token));
@@ -155,6 +156,7 @@ public class NotesServiceImpl implements INotesService {
         Optional<UserNotes> userNotes = notesRepository.findByNoteId(noteId);
         if (isUserExists.isPresent() && userNotes.isPresent()) {
                 userNotes.get().getImage().remove(image);
+                userNotes.get().setNoteEditedOn(LocalDateTime.now());
                 notesRepository.save(userNotes.get());
         }throw new NoteException("Image not Found");
     }
@@ -267,7 +269,7 @@ public class NotesServiceImpl implements INotesService {
         Optional<Registration> isUserExists = registrationRepository.findById(id);
         if (isUserExists.isPresent()) {
             List<NoteSummary> noteSummaryList = notesRepository.findAll().stream().map(userNotes -> new NoteSummary(userNotes)).collect(Collectors.toList());
-            List<NoteSummary> trashedNotes = noteSummaryList.stream().filter(userNotes -> (userNotes.isTrash() == true)).collect(Collectors.toList());
+            List<NoteSummary> trashedNotes = noteSummaryList.stream().filter(userNotes -> (userNotes.isTrash())).collect(Collectors.toList());
             if (trashedNotes.isEmpty())
                 throw new NoteException("Nothing to see in Trash");
             else return trashedNotes;
@@ -281,7 +283,7 @@ public class NotesServiceImpl implements INotesService {
         Optional<Registration> isUserExists = registrationRepository.findById(id);
         if (isUserExists.isPresent()) {
             List<NoteSummary> noteSummaryList = notesRepository.findAll().stream().map(userNotes -> new NoteSummary(userNotes)).collect(Collectors.toList());
-            List<NoteSummary> pinnedNotes = noteSummaryList.stream().filter(userNotes -> (userNotes.isPin() == true && userNotes.isTrash() == false)).collect(Collectors.toList());
+            List<NoteSummary> pinnedNotes = noteSummaryList.stream().filter(userNotes -> (userNotes.isPin() && !userNotes.isTrash())).collect(Collectors.toList());
             if (pinnedNotes.isEmpty())
                 throw new NoteException("Nothing to see in Pinned Notes");
             else return pinnedNotes;
@@ -295,7 +297,7 @@ public class NotesServiceImpl implements INotesService {
         Optional<Registration> isUserExists = registrationRepository.findById(id);
         if (isUserExists.isPresent()) {
             List<NoteSummary> noteSummaryList = notesRepository.findAll().stream().map(userNotes -> new NoteSummary(userNotes)).collect(Collectors.toList());
-            List<NoteSummary> archivedNotes = noteSummaryList.stream().filter(userNotes -> (userNotes.isArchive() == true && userNotes.isTrash() == false)).collect(Collectors.toList());
+            List<NoteSummary> archivedNotes = noteSummaryList.stream().filter(userNotes -> (userNotes.isArchive() && !userNotes.isTrash())).collect(Collectors.toList());
             if (archivedNotes.isEmpty())
                 throw new NoteException("Nothing to see in Archived Notes");
             else return archivedNotes;
@@ -303,5 +305,51 @@ public class NotesServiceImpl implements INotesService {
         throw new NoteException("User Not Found");
     }
 
+    @Override
+    public UserNotes setReminderToNewNote(String token, String setReminder, NotesDTO notesDTO) {
+        UUID id = UUID.fromString(tokenUtil.decodeToken(token));
+        Optional<Registration> isUserExists = registrationRepository.findById(id);
+        if (isUserExists.isPresent()) {
+            UserNotes userNotes = new UserNotes(notesDTO);
+            DateTimeFormatter datetimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+            LocalDateTime reminderDateTime = LocalDateTime.parse(setReminder, datetimeFormatter);
+            LocalDateTime currentDateAndTime = LocalDateTime.now();
+            if (reminderDateTime.isAfter(currentDateAndTime)) {
+                userNotes.setReminder(String.valueOf(reminderDateTime));
+                notesRepository.save(userNotes);
+                return userNotes;
+            }
+            throw new NoteException("Date should be future date");
+        }throw new NoteException("User Not Found");
+    }
+
+    @Override
+    public UserNotes setReminderToExistingNote(String token, UUID noteId, String setReminder) {
+        UUID id = UUID.fromString(tokenUtil.decodeToken(token));
+        Optional<Registration> isUserExists = registrationRepository.findById(id);
+        Optional<UserNotes> byNoteId = notesRepository.findByNoteId(noteId);
+        if (isUserExists.isPresent() && byNoteId.isPresent()) {
+            DateTimeFormatter datetimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+            LocalDateTime reminderDateTime = LocalDateTime.parse(setReminder, datetimeFormatter);
+            LocalDateTime currentDateAndTime = LocalDateTime.now();
+            if (reminderDateTime.isAfter(currentDateAndTime)) {
+                byNoteId.get().setReminder(String.valueOf(reminderDateTime));
+                byNoteId.get().setNoteEditedOn(LocalDateTime.now());
+                return notesRepository.save(byNoteId.get());
+            } throw new NoteException("Date should be future date");
+        }throw new NoteException("Notes Not Found");
+    }
+
+    @Override
+    public void deleteReminderFromNotes(String token, UUID noteId) {
+        UUID id = UUID.fromString(tokenUtil.decodeToken(token));
+        Optional<Registration> isUserExists = registrationRepository.findById(id);
+        Optional<UserNotes> byNoteId = notesRepository.findByNoteId(noteId);
+        if (isUserExists.isPresent() && byNoteId.isPresent()) {
+            byNoteId.get().setReminder(null);
+            byNoteId.get().setNoteEditedOn(LocalDateTime.now());
+            notesRepository.save(byNoteId.get());
+        }
+    }
 
 }

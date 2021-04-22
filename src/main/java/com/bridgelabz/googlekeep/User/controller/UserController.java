@@ -9,6 +9,9 @@ import com.bridgelabz.googlekeep.User.dto.UserDTO;
 import com.bridgelabz.googlekeep.User.model.Registration;
 import com.bridgelabz.googlekeep.User.repository.RegistrationRepository;
 import com.bridgelabz.googlekeep.User.service.IUserService;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import javax.validation.Valid;
 import java.io.IOException;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/user")
@@ -48,13 +50,6 @@ public class UserController {
         ResponseDTO responseDTO = new ResponseDTO("User Logged in sucessfully", userData);
         return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.OK);
     }
-
-//    @GetMapping("/refreshToken")
-//    public ResponseEntity<ResponseDTO> refreshToken(@RequestHeader UUID id) {
-//        ResponseToken userData = iUserService.refreshToken(id);
-//        ResponseDTO responseDTO = new ResponseDTO("Get Call Successful", userData);
-//        return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.OK);
-//    }
 
     @PostMapping("/forgotPassword")
     public ResponseEntity<ResponseDTO> forgotPassword(@Valid @RequestBody EmailDTO emailDTO) {
