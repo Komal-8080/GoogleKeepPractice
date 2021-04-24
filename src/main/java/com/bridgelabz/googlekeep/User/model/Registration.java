@@ -44,7 +44,5 @@ public @Data class Registration {
         this.password = registrationDTO.getPassword();
     }
 
-    public Registration() {
-
-    }
+    public Registration() { }
 }

@@ -1,6 +1,6 @@
 package com.bridgelabz.googlekeep.User.service;
 
-import com.bridgelabz.googlekeep.Notes.model.UserNotes;
+import com.bridgelabz.googlekeep.Response.Response;
 import com.bridgelabz.googlekeep.Response.ResponseToken;
 import com.bridgelabz.googlekeep.User.dto.EmailDTO;
 import com.bridgelabz.googlekeep.User.dto.PasswordDTO;
@@ -8,8 +8,8 @@ import com.bridgelabz.googlekeep.User.dto.RegistrationDTO;
 import com.bridgelabz.googlekeep.User.dto.UserDTO;
 import com.bridgelabz.googlekeep.User.model.Registration;
 import com.bridgelabz.googlekeep.User.repository.RegistrationRepository;
-import com.bridgelabz.googlekeep.exceptions.NoteException;
-import com.bridgelabz.googlekeep.exceptions.UserException;
+import com.bridgelabz.googlekeep.configuration.ApplicationConfiguration;
+import com.bridgelabz.googlekeep.exceptions.UserExceptionNew;
 import com.bridgelabz.googlekeep.utility.FileUploadUtil;
 import com.bridgelabz.googlekeep.utility.TokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +17,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.awt.*;
 import java.io.IOException;
 import java.util.Optional;
 import java.util.UUID;
@@ -41,10 +39,7 @@ public class UserServiceImpl implements IUserService {
     @Override
     public Registration userRegistration(RegistrationDTO registrationDTO) {
         Optional<Registration> userEmailId = registrationRepository.findByEmailId(registrationDTO.getEmailId());
-        if (userEmailId.isPresent()) {
-            throw new UserException("User Already Registered");
-        }
-        else {
+        if (!userEmailId.isPresent()) {
             Registration registration = new Registration(registrationDTO);
             registration.setPassword(passwordEncoder.encode(registrationDTO.getPassword()));
             UUID id = registration.getId();
@@ -54,8 +49,8 @@ public class UserServiceImpl implements IUserService {
             if (registration.isVerify()) {
                 Registration saveUser = registrationRepository.save(registration);
                 return saveUser;
-            }throw new UserException("InValid EmailId");
-        }
+            }throw new UserExceptionNew(UserExceptionNew.ExceptionTypes.INVALID_EMAIL);
+        } throw new UserExceptionNew(UserExceptionNew.ExceptionTypes.USER_EXISTS);
     }
 
     @Override
@@ -65,10 +60,8 @@ public class UserServiceImpl implements IUserService {
         if (isUserExists.isPresent()){
             isUserExists.get().setVerify(true);
             registrationRepository.save(isUserExists.get());
-            return "Validation Successful";
-        }
-        else
-            throw new UserException("User Not Found");
+            return ApplicationConfiguration.getMessageAccessor().getMessage("101");
+        } throw new UserExceptionNew(UserExceptionNew.ExceptionTypes.USER_NOT_FOUND);
     }
 
     @Override
@@ -76,8 +69,7 @@ public class UserServiceImpl implements IUserService {
         Optional<Registration> userData = registrationRepository.findByEmailId(userDTO.getUserId());
         if (userData.isPresent()) {
             return authentication(userData,userDTO.getPassword());
-        }
-        throw new UserException("Invalid UserId Or Password");
+        } throw new UserExceptionNew(UserExceptionNew.ExceptionTypes.INVALID_USERID_OR_PASSWORD);
     }
 
     private ResponseToken authentication(Optional<Registration> userDTO, String password) {
@@ -87,26 +79,10 @@ public class UserServiceImpl implements IUserService {
             String token = tokenUtil.createToken(userDTO.get().getId());
             response.setToken(token);
             response.setStatusCode(200);
-            response.setStatusMessage("User Logged In Successfully");
+            response.setStatusMessage(ApplicationConfiguration.getMessageAccessor().getMessage("102"));
             return response;
-        }
-        throw new UserException("Invalid UserId Or Password");
+        } throw new UserExceptionNew(UserExceptionNew.ExceptionTypes.INVALID_USERID_OR_PASSWORD);
     }
-
-//    @Override
-//    public ResponseToken refreshToken(UUID id) {
-////        UUID id = UUID.fromString(tokenUtil.decodeToken(token));
-//        Optional<Registration> isUserExists = registrationRepository.findById(id);
-//        if (isUserExists.isPresent()) {
-//            ResponseToken response = new ResponseToken();
-//            String refreshToken = tokenUtil.createToken(id);
-//            response.setToken(refreshToken);
-//            response.setStatusCode(200);
-//            response.setStatusMessage("new token generated");
-//            return response;
-//        }
-//        throw new UserException("Invalid Token");
-//    }
 
     @Override
     public String forgotPassword(EmailDTO emailDTO) {
@@ -117,8 +93,7 @@ public class UserServiceImpl implements IUserService {
             String url = emailService.getPasswordResetUrl(id);
             emailService.sendMail(emailId,"Regarding Password Reset","Dear "+userEmailId.get().getFirstName()+"\n"+"Kindly,Click on the below link to Reset Password"+"\n"+url);
             return emailId ;
-        }
-        throw new UserException("EmailId Not Found");
+        } throw new UserExceptionNew(UserExceptionNew.ExceptionTypes.EMAIL_NOT_FOUND);
     }
 
     @Override
@@ -130,11 +105,9 @@ public class UserServiceImpl implements IUserService {
             if( status == true ) {
                 isUserExists.get().setPassword(passwordEncoder.encode(passwordDTO.getNewPassword()));
                 registrationRepository.save(isUserExists.get());
-                return "Password Reset Successfully";
-            }else
-                throw new UserException("New password and Confirm password does not match");
-        } else
-            throw new UserException("User Not Found");
+                return ApplicationConfiguration.getMessageAccessor().getMessage("103");
+            } throw new UserExceptionNew(UserExceptionNew.ExceptionTypes.PASSWORD_DOES_NOT_MATCH);
+        } throw new UserExceptionNew(UserExceptionNew.ExceptionTypes.INVAlID_TOKEN);
     }
 
     @Override
@@ -147,19 +120,18 @@ public class UserServiceImpl implements IUserService {
             Registration saveImage = registrationRepository.save(isUserExists.get());
             String uploadDir = "profileImages/" + saveImage.getProfileImage();
             FileUploadUtil.saveFile(uploadDir, fileName, image);
-            return "Image Uploaded Successfully";
-        } throw new UserException("User Not Found");
+            return ApplicationConfiguration.getMessageAccessor().getMessage("104");
+        } throw new UserExceptionNew(UserExceptionNew.ExceptionTypes.INVAlID_TOKEN);
     }
 
     @Override
     public String getProfileImage(String token) {
         UUID id = UUID.fromString(tokenUtil.decodeToken(token));
         Optional<Registration> isUserExists = registrationRepository.findById(id);
-        if (!isUserExists.isPresent()){
-            throw new UserException("User Not Found");
-        }
-        String profileImage = isUserExists.get().getProfileImage();
-        return profileImage;
+        if (isUserExists.isPresent()){
+            String profileImage = isUserExists.get().getProfileImage();
+            return profileImage;
+        } throw new UserExceptionNew(UserExceptionNew.ExceptionTypes.INVAlID_TOKEN);
     }
 
     @Override
@@ -169,7 +141,7 @@ public class UserServiceImpl implements IUserService {
         if (isUserExists.isPresent()) {
             isUserExists.get().setProfileImage(null);
             registrationRepository.save(isUserExists.get());
-        }
+        } throw new UserExceptionNew(UserExceptionNew.ExceptionTypes.INVAlID_TOKEN);
     }
 
 }

@@ -1,6 +1,5 @@
 package com.bridgelabz.googlekeep.User.service;
 
-
 import com.bridgelabz.googlekeep.Response.ResponseToken;
 import com.bridgelabz.googlekeep.User.dto.EmailDTO;
 import com.bridgelabz.googlekeep.User.dto.PasswordDTO;
@@ -28,6 +27,4 @@ public interface IUserService {
     String getProfileImage(String token);
 
     void removeProfileImage(String token);
-
-//    ResponseToken refreshToken(UUID id);
 }

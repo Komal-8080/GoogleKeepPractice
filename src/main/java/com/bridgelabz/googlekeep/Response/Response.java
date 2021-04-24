@@ -10,4 +10,8 @@ public @ToString class Response {
 
     private String message;
     private int code;
+
+    public Response(String message) {
+        this.message = message;
+    }
 }

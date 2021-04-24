@@ -1,12 +1,10 @@
 package com.bridgelabz.googlekeep.Notes.service;
 
-
 import com.bridgelabz.googlekeep.Notes.dto.EditLabelDTO;
 import com.bridgelabz.googlekeep.Notes.dto.LabelDTO;
 import com.bridgelabz.googlekeep.Notes.dto.LabelSummary;
 import com.bridgelabz.googlekeep.Notes.dto.NotesDTO;
 import com.bridgelabz.googlekeep.Notes.model.Label;
-
 import java.util.List;
 import java.util.UUID;
 

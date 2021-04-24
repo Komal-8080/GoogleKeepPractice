@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 @ControllerAdvice
 public class ExceptionHandlerForAll {
 
-    public static final String message = "Exception while processing REST Request";
+    public static final String message = "Exception While Processing Request";
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ResponseDTO> handleHttpMessageNotReadableException(HttpMessageNotReadableException exception) {
@@ -62,27 +62,27 @@ public class ExceptionHandlerForAll {
         return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(UserException.class)
-    public ResponseEntity<ResponseDTO> handleUserException(UserException exception) {
-        ResponseDTO responseDTO = new ResponseDTO(message,exception.getMessage());
+    @ExceptionHandler(MailParseException.class)
+    public ResponseEntity<ResponseDTO> handleMailParseException(MailParseException exception) {
+        ResponseDTO responseDTO = new ResponseDTO(message,"Invalid Email Id");
+        return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(UserExceptionNew.class)
+    public ResponseEntity<ResponseDTO> handleUserExceptionNew(UserExceptionNew exception) {
+        ResponseDTO responseDTO = new ResponseDTO(message,exception.exceptionTypes.errorMessage);
         return  new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(NoteException.class)
     public ResponseEntity<ResponseDTO> handleNoteException(NoteException exception) {
-        ResponseDTO responseDTO = new ResponseDTO(message,exception.getMessage());
+        ResponseDTO responseDTO = new ResponseDTO(message,exception.exceptionTypes.errorMessage);
         return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(LabelException.class)
     public ResponseEntity<ResponseDTO> handleLabelException(LabelException exception) {
-        ResponseDTO responseDTO = new ResponseDTO(message,exception.getMessage());
-        return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler(MailParseException.class)
-    public ResponseEntity<ResponseDTO> handleMailParseException(MailParseException exception) {
-        ResponseDTO responseDTO = new ResponseDTO(message,"Invalid Email Id");
+        ResponseDTO responseDTO = new ResponseDTO(message,exception.exceptionTypes.errorMessage);
         return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.BAD_REQUEST);
     }
 }

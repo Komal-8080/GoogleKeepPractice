@@ -1,11 +1,11 @@
 package com.bridgelabz.googlekeep.Notes.model;
 
-
 import com.bridgelabz.googlekeep.Notes.dto.ColourDTO;
 import com.bridgelabz.googlekeep.Notes.dto.EditNotesDTO;
 import com.bridgelabz.googlekeep.Notes.dto.NotesDTO;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 import javax.persistence.*;
@@ -16,6 +16,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Entity
 @Table(name = "user_Notes")
+@ToString
 public @Data class UserNotes {
 
     @Id

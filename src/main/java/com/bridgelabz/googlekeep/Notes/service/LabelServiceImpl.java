@@ -1,6 +1,5 @@
 package com.bridgelabz.googlekeep.Notes.service;
 
-
 import com.bridgelabz.googlekeep.Notes.dto.EditLabelDTO;
 import com.bridgelabz.googlekeep.Notes.dto.LabelDTO;
 import com.bridgelabz.googlekeep.Notes.dto.LabelSummary;
@@ -47,8 +46,8 @@ public class LabelServiceImpl implements ILabelService{
             if (!byLabelName.isPresent()) {
                 label.setLabelCreatedOn(LocalDateTime.now());
                 return labelRepository.save(label);
-            }else throw new LabelException("Label already Exists");
-        } else throw new LabelException("User Not Found");
+            } throw new LabelException(LabelException.ExceptionTypes.LABEL_EXISTS);
+        } throw new LabelException(LabelException.ExceptionTypes.INVAlID_TOKEN);
     }
 
     @Override
@@ -62,10 +61,8 @@ public class LabelServiceImpl implements ILabelService{
             Optional<Label> byLabelId = labelRepository.findByLabelId(UUID.fromString(label));
             if (byLabelId.isPresent()){
                 return Collections.singletonList(new LabelSummary(byLabelId.get()));
-            }
-            throw new LabelException("Label Not Found");
-        }
-        throw new LabelException("User Not Found");
+            } throw new LabelException(LabelException.ExceptionTypes.LABEL_NOT_FOUND);
+        } throw new LabelException(LabelException.ExceptionTypes.INVAlID_TOKEN);
     }
 
     @Override
@@ -77,8 +74,7 @@ public class LabelServiceImpl implements ILabelService{
             byLabelId.get().updateLabel(editLabelDTO);
             byLabelId.get().setLabelEditedOn(LocalDateTime.now());
             return labelRepository.save(byLabelId.get());
-        }
-        throw new LabelException("Label Not Found");
+        } throw new LabelException(LabelException.ExceptionTypes.LABEL_NOT_FOUND);
     }
 
     @Override
@@ -88,7 +84,7 @@ public class LabelServiceImpl implements ILabelService{
         Optional<Label> byLabelId = labelRepository.findByLabelId(labelId);
         if (isUserExists.isPresent() && byLabelId.isPresent()) {
                 labelRepository.delete(byLabelId.get());
-        }
+        }  throw new LabelException(LabelException.ExceptionTypes.LABEL_NOT_FOUND);
     }
 
     @Override
@@ -106,7 +102,7 @@ public class LabelServiceImpl implements ILabelService{
             notesRepository.save(userNotes);
             Label save = labelRepository.save(byLabelId.get());
             return save;
-        } else throw new LabelException("Label Not Found");
+        } throw new LabelException(LabelException.ExceptionTypes.LABEL_NOT_FOUND);
     }
 
     @Override
@@ -116,7 +112,7 @@ public class LabelServiceImpl implements ILabelService{
         Optional<Label> byLabelId = labelRepository.findByLabelId(labelId);
         if (isUserExists.isPresent() && byLabelId.isPresent()) {
             return byLabelId.get();
-        }else throw new LabelException("Label Not Found");
+        } throw new LabelException(LabelException.ExceptionTypes.LABEL_NOT_FOUND);
     }
 
 }

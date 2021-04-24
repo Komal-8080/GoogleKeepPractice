@@ -1,15 +1,10 @@
 package com.bridgelabz.googlekeep.User.service;
 
-import com.bridgelabz.googlekeep.User.model.Registration;
-import com.bridgelabz.googlekeep.User.repository.RegistrationRepository;
-import com.bridgelabz.googlekeep.exceptions.UserException;
 import com.bridgelabz.googlekeep.utility.TokenUtil;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
 import java.util.UUID;
 
 @Service

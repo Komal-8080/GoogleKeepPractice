@@ -50,6 +50,7 @@ public class UserController {
         return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.OK);
     }
 
+
     @ApiOperation("API used to Validate User and Save Details in Database. This API is used to\n" +
             "validate user with given email id. If user email id is validate then user registration will be successful")
     @ApiResponses({@ApiResponse(
@@ -68,6 +69,7 @@ public class UserController {
         return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.OK);
     }
 
+
     @ApiOperation("API Used to for User Login.This API is used for user login\n"+
                     "if userId and password are valid then user will be given a token for further operations\n"+
                     "on successful login")
@@ -77,7 +79,7 @@ public class UserController {
             response = Response.class
     ),@ApiResponse(
             code = 404,
-            message = "User Not Found",
+            message = "Invalid UserId or Password",
             response = Response.class
     )})
     @PostMapping("/login")
@@ -86,6 +88,7 @@ public class UserController {
         ResponseDTO responseDTO = new ResponseDTO("User Logged in Successfully", userData);
         return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.OK);
     }
+
 
     @ApiOperation("API Used if User ForgotPassword.This API is used if user forgot password\n"+
             "user has to provide email id on which mail will be sent and user has to click on the provided link in the mail\n"+
@@ -106,6 +109,7 @@ public class UserController {
         return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.OK);
     }
 
+
     @ApiOperation("API Used for Password Reset.This API is used for setting password\n"+
                     "user has to enter new password and also need to confirm the same and if new password and confirm password matches\n"+
                     "then new password will be set and user can use the same password for further operations")
@@ -125,6 +129,7 @@ public class UserController {
         return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.OK);
     }
 
+
     @ApiOperation("API Used for Setting Profile Image.This API is used for Setting Profile Image\n"+
             "user has to select the image from system storage and the same image will be set to profile image")
     @ApiResponses({@ApiResponse(
@@ -143,6 +148,7 @@ public class UserController {
         return new ResponseEntity<ResponseDTO>(responseDTO,HttpStatus.OK);
     }
 
+
     @ApiOperation("API to See Profile Image.This API is used for getting Profile Image\n"+
             "user can see the profile image here")
     @ApiResponses({@ApiResponse(
@@ -160,6 +166,7 @@ public class UserController {
         ResponseDTO responseDTO = new ResponseDTO("Get Call Successful", response);
         return new ResponseEntity<ResponseDTO>(responseDTO,HttpStatus.OK);
     }
+
 
     @ApiOperation("API Used for Removing Profile Image.This API is used for removing Profile Image\n"+
             "user can remove the profile image ")
